@@ -1,2 +1,1 @@
-# aaronstatic-website
-Aaron Static Website
+The website of musician Aaron Static. Created with Next.JS 13.

@@ -1,0 +1,41 @@
+[data-bs-theme="dark"] {
+  --bs-body-bg: var(--bs-black);
+  --bs-primary: #B26B88;
+  --bs-primary-bg-subtle: #1c1023;
+  --bs-primary-rgb: 127, 54, 122;
+  --bs-primary-text-emphasis: #fff;
+}
+
+.social-links {
+  padding: 10px 0;
+}
+
+.social-links a {
+  color: #70726F;
+  font-size: 20px;
+  padding: 10px;
+}
+
+.social-links a:hover {
+  color: white;
+}
+
+.navbar .navbar-nav {
+  display: inline-block;
+  float: none;
+  vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .navbar .navbar-nav {
+    display: flex;
+  }
+}
+
+.blockquote {
+  font-size: 0.8rem;
+}
