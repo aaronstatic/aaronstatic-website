@@ -60,13 +60,13 @@ export default function Release({ params }: { params: { name: string } }) {
                     </div>
                 </div>
                 <div className="col-lg-9 col-md-6 col-12">
-                    {release.description && release.description.map((paragraph) => (
-                        <p><small>{paragraph}</small></p>
+                    {release.description && release.description.map((paragraph: string, i: number) => (
+                        <p key={i}><small>{paragraph}</small></p>
                     ))}
                     {release.reviews && (<h6>Reviews</h6>)}
-                    {release.reviews && release.reviews.map((review: Review) => (
+                    {release.reviews && release.reviews.map((review: Review, i: number) => (
 
-                        <figure>
+                        <figure key={i}>
                             <blockquote className="blockquote">
                                 <p>{review.text}</p>
                             </blockquote>
@@ -141,7 +141,7 @@ export default function Release({ params }: { params: { name: string } }) {
                             </thead>
                             <tbody>
                                 {release.tracks.map((track, index) => (
-                                    <tr>
+                                    <tr key={index}>
                                         <th scope="row">{index + 1}</th>
                                         <td>{track.artists.map(artist => (artist.name)).join(", ")}</td>
                                         <td>{track.name}</td>
