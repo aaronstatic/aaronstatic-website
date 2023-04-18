@@ -1,12 +1,13 @@
 {
-  "name": "aaronstatic",
+  "name": "aaronstatic-website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cron": "node cron/aaronstatic_cron.js"
   },
   "dependencies": {
     "@types/node": "18.15.11",
@@ -22,6 +23,7 @@
     "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "spotify-web-api-node": "^5.0.2",
     "typescript": "5.0.4"
   },
   "devDependencies": {

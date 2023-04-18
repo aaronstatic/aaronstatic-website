@@ -26,7 +26,7 @@ export default function Music() {
             <h1 className="text-center p-2 display-6">Albums</h1>
             <div className="row gy-2 gx-2 d-flex justify-content-center">
                 {releases.map((release) => (
-                    <div key={release.id} className="col-lg-2 col-md-3 col-6">
+                    <div key={release.id} className="col-lg-2 col-md-4 col-6">
                         <ReleaseCard key={release.id} release={release} />
                     </div>
                 ))}
@@ -35,7 +35,7 @@ export default function Music() {
             <h1 className="text-center p-2 mt-4 display-6">Singles</h1>
             <div className="row gy-2 gx-2 d-flex justify-content-center">
                 {singles.map((release) => (
-                    <div key={release.id} className="col-lg-1 col-md-2 col-4">
+                    <div key={release.id} className="col-lg-2 col-md-4 col-6">
                         <ReleaseCard key={release.id} release={release} />
                     </div>
                 ))}
@@ -43,7 +43,7 @@ export default function Music() {
             <h1 className="text-center p-2 mt-4 display-6">Appears On</h1>
             <div className="row gy-2 gx-2 d-flex justify-content-center">
                 {appears.map((release) => (
-                    <div key={release.id} className="col-lg-1 col-md-2 col-4">
+                    <div key={release.id} className="col-lg-2 col-md-4 col-6">
                         <ReleaseCard key={release.id} release={release} />
                     </div>
                 ))}

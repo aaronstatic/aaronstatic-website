@@ -1,10 +1,7 @@
 require('dotenv').config()
 const { MongoClient } = require("mongodb");
 const client = new MongoClient(process.env["MONGODB_URI"]);
-const SerpApi = require('google-search-results-nodejs');
-var SpotifyWebApi = require('spotify-web-api-node');
-
-const search = new SerpApi.GoogleSearch(process.env.SERPAPI_API_KEY);
+const SpotifyWebApi = require('spotify-web-api-node');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
@@ -12,37 +9,56 @@ var spotifyApi = new SpotifyWebApi({
     clientSecret: process.env["SPOTIFY_CLIENT_SECRET"],
     redirectUri: 'http://aaronstatic.com/spotify/auth'
 });
-spotifyApi.clientCredentialsGrant().then((result) => {
-    const db = client.db("aaronstatic");
-    const collection = db.collection("releases");
 
+
+const db = client.db("aaronstatic");
+
+
+async function update() {
+    const releases = db.collection("releases");
+    /*
+    const result = await spotifyApi.clientCredentialsGrant()
     spotifyApi.setAccessToken(result.body['access_token']);
-
-    spotifyApi.getArtistAlbums('0Nsz79ZcE8E4i3XZhCzZ1l').then(
-        function (data) {
-            for (const item of data.body.items) {
-                console.log("Adding/updating release: " + item.name);
-                spotifyApi.getAlbum(item.id).then((album) => {
-                    album.body.album_group = item.album_group;
-
-                    collection.updateOne(
-                        { id: item.id },
-                        {
-                            $set: album.body
-                        },
-                        { upsert: true }
-                    ).then(() => {
-
-                    }, (err) => {
-                        console.error(err);
-                    });
-                });
-            }
-        },
-        function (err) {
+    const data = await spotifyApi.getArtistAlbums('0Nsz79ZcE8E4i3XZhCzZ1l')
+    
+    for (const item of data.body.items) {
+        console.log("Adding/updating release: " + item.name);
+        const album = await spotifyApi.getAlbum(item.id)
+        album.body.album_group = item.album_group;
+    
+        releases.updateOne(
+            { id: item.id },
+            {
+                $set: album.body
+            },
+            { upsert: true }
+        ).then(() => {
+    
+        }, (err) => {
             console.error(err);
-            process.exit();
-        }
-    );
-});
+        });
+    }
+    */
+    const mixJson = await fetch("https://api.mixcloud.com/aaronstatic/cloudcasts/");
+    const mixData = await mixJson.json();
+
+    const mixes = db.collection("mixes");
+
+    for (const mix of mixData.data) {
+        console.log("Adding/updating mix: " + mix.name);
+        await mixes.updateOne(
+            { key: mix.key },
+            {
+                $set: mix
+            },
+            { upsert: true }
+        );
+    }
+
+    client.close();
+    process.exit();
+
+}
+
+update();
 

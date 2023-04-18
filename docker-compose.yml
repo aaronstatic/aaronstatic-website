@@ -1,0 +1,9 @@
+version: "1.0"
+services:
+  server:
+    build: .
+    env_file: ./.env
+    ports:
+      - "3100:3100"
+    extra_hosts:
+      - "mongoservice:172.17.0.1"

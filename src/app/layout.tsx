@@ -1,10 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.css'
-import './globals.css'
+
 import Image from 'next/image'
 import getNav from './nav'
 import Bootstrap from '@/components/Bootstrap'
 import { headers } from 'next/headers';
 import Link from 'next/link'
+import './globals.css'
 
 export const metadata = {
   title: 'Aaron Static',
@@ -87,6 +88,8 @@ export default function RootLayout({
 
         <SocialLinks />
         <Bootstrap />
+
+        <p className="text-center text-secondary"><small>Made with love by Aaron Static using Next.JS 13 and React</small></p>
       </body>
     </html >
   )

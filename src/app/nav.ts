@@ -11,6 +11,9 @@ export default function getNav(): NavItem[] {
         name: 'Music',
         url: '/music'
     }, {
+        name: 'Mixes',
+        url: '/mixes'
+    }, {
         name: 'Projects',
         url: '/projects'
     }, {

@@ -2,6 +2,7 @@ import { MongoClient, WithId } from "mongodb";
 import * as dotenv from "dotenv";
 import Release from "./types/Release";
 import { Content } from "./types/Content";
+import Mix from "./types/Mix";
 dotenv.config();
 
 const URI = process.env.MONGODB_URI;
@@ -52,6 +53,16 @@ const mapRelease = (doc: any): Release => ({
     description: doc.description,
     lyrics: doc.lyrics,
     reviews: doc.reviews
+});
+
+const mapMix = (doc: any): Mix => ({
+    key: doc.key,
+    name: doc.name,
+    audio_length: doc.audio_length,
+    pictures: doc.pictures,
+    created_time: doc.created_time,
+    tags: doc.tags,
+    url: doc.url
 });
 
 export const getReleases = async (limit: number): Promise<Release[]> => {
@@ -128,6 +139,20 @@ export const getReleaseByName = async (name: string): Promise<Release | null> =>
     if (!document) return null;
 
     return mapRelease(document);
+}
+
+export const getMixes = async (limit: number): Promise<Mix[]> => {
+    let collection = db.collection("mixes");
+
+    const documents = await collection
+        .find({})
+        .sort({ created_time: -1 })
+        .limit(limit)
+        .toArray();
+
+    const mixes: Mix[] = documents.map(mapMix);
+
+    return mixes;
 }
 
 export const getContent = async (key: string): Promise<Content> => {

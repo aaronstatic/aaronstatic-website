@@ -54,7 +54,7 @@ export default function Release({ params }: { params: { name: string } }) {
         <main className="">
             <h1 className="text-center display-6">{`${release.artists.map(artist => (artist.name)).join(", ")} - ${release.name}`}</h1>
             <div className="row justify-content-center">
-                <div className="col-lg-3 col-md-5 col-12">
+                <div className="col-lg-3 col-md-7 col-12">
                     <div className="card mb-1">
                         <img src={release.images[0].url} className="card-img-top" alt={release.name} />
                     </div>
@@ -77,18 +77,7 @@ export default function Release({ params }: { params: { name: string } }) {
                     ))}
                 </div>
             </div>
-            <div className="row mt-2">
-                <div className="col-lg-3 col-md-8 col-12">
-                    <div className="card">
-                        <div className="card-header">
-                            Release Info
-                        </div>
-                        <div className="card-body">
-                            <p className="card-text"><small><strong>Release Date:</strong> {new Date(release.release_date).toLocaleDateString()}</small></p>
-                            <p className="card-text"><small><strong>Label:</strong> {release.label}</small></p>
-                        </div>
-                    </div>
-                </div>
+            <div className="row mt-2 justify-content-center">
                 <div className="row justify-content-center mt-2">
                     {release.external_urls.spotify && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
