@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import Release from "./types/Release";
 import { Content } from "./types/Content";
 import Mix from "./types/Mix";
+import Project from "./types/Project";
 dotenv.config();
 
 const URI = process.env.MONGODB_URI;
@@ -63,6 +64,13 @@ const mapMix = (doc: any): Mix => ({
     created_time: doc.created_time,
     tags: doc.tags,
     url: doc.url
+});
+
+const mapProject = (doc: any): Project => ({
+    name: doc.name,
+    paragraphs: doc.paragraphs,
+    photo: doc.photo,
+    external_urls: doc.external_urls
 });
 
 export const getReleases = async (limit: number): Promise<Release[]> => {
@@ -153,6 +161,19 @@ export const getMixes = async (limit: number): Promise<Mix[]> => {
     const mixes: Mix[] = documents.map(mapMix);
 
     return mixes;
+}
+
+export const getProjects = async (limit: number): Promise<Project[]> => {
+    let collection = db.collection("projects");
+
+    const documents = await collection
+        .find({})
+        .limit(limit)
+        .toArray();
+
+    const projects: Project[] = documents.map(mapProject);
+
+    return projects;
 }
 
 export const getContent = async (key: string): Promise<Content> => {
