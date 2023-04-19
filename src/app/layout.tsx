@@ -1,24 +1,29 @@
-import 'bootstrap/dist/css/bootstrap.css'
+import '../lib/bootstrap'
+import '../lib/globalcss'
 
 import Image from 'next/image'
 import getNav from './nav'
 import Bootstrap from '@/components/Bootstrap'
 import { headers } from 'next/headers';
 import Link from 'next/link'
-import './globals.css'
+import Analytics from '@/components/GoogleAnalytics'
 
 export const metadata = {
   title: 'Aaron Static',
   description: 'Australian based music artist and app developer producing Ambient, Liquid Drum & Bass, Organic House, Future Garage, and code to help people write music.',
+  icons: {
+    icon: '/img/icon.png'
+  },
   metadataBase: new URL('http://aaronstatic.com'),
   keywords: ['music', 'artist', 'app developer', 'ambient', 'liquid', 'drum & bass', 'organic house', 'house', 'future garage', 'code'],
   colorScheme: 'dark',
   openGraph: {
     title: "Aaron Static",
+    type: "website",
     description: "Australian-based music artist and app developer",
-    url: "http://aaronstatic.com",
+    url: "https://aaronstatic.com",
     siteName: "Aaron Static",
-    images: ['social-preview.png']
+    images: ['https://aaronstatic.com/img/social-preview.jpg']
   },
   viewport: 'width=device-width, initial-scale=1.0'
 }
@@ -55,7 +60,7 @@ export default function RootLayout({
       <body>
         <nav className="navbar navbar-expand-lg">
           <div className="container-fluid">
-            <a className="navbar-brand" href="/"><Image height={50} width={280} alt="Aaron Static" src="/img/aaronstatic_logo.png" /></a>
+            <a className="navbar-brand" href="/"><img height={50} width={280} alt="Aaron Static" src="/img/aaronstatic_logo.png" /></a>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
             </button>
@@ -88,6 +93,7 @@ export default function RootLayout({
 
         <SocialLinks />
         <Bootstrap />
+        <Analytics />
 
         <p className="text-center text-secondary"><small>Made with love by Aaron Static using Next.JS 13 and React</small></p>
       </body>

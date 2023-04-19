@@ -9,12 +9,15 @@ type Props = {
 };
 
 export async function generateMetadata(
-    { params }: Props,
-    parent?: ResolvingMetadata,
+    { params }: Props
 ): Promise<Metadata> {
     const release = await getReleaseByName(params.name);
 
-    if (release === null) throw new Error(`Release not found: ${params.name}`);
+    if (release === null) {
+        return Promise.resolve({
+            title: undefined,
+        });
+    }
 
     return {
         title: `${release.artists.map(artist => (artist.name)).join(", ")} - ${release.name}`,
