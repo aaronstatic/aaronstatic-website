@@ -7,36 +7,47 @@ import Project from "./types/Project";
 dotenv.config();
 
 const URI = process.env.MONGODB_URI;
-const options = {};
 
 if (!URI) {
     throw new Error("No Mongo URI found, add it to your .env file");
 }
 
-let client = new MongoClient(URI, options);
+const options = {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+};
 
-let globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise: Promise<MongoClient>
+declare global {
+    var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
-if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(URI)
-    globalWithMongo._mongoClientPromise = client.connect()
-}
+
+let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-if (process.env.NODE_ENV !== "production") {
-    if (!globalWithMongo._mongoClientPromise) {
-        globalWithMongo._mongoClientPromise = client.connect();
+if (process.env.NODE_ENV === "development") {
+    // In development mode, use a global variable so that the value
+    // is preserved across module reloads caused by HMR (Hot Module Replacement).
+    if (!global._mongoClientPromise) {
+        client = new MongoClient(URI, options);
+        global._mongoClientPromise = client.connect();
     }
-
-    clientPromise = globalWithMongo._mongoClientPromise;
+    clientPromise = global._mongoClientPromise;
 } else {
+    // In production mode, it's best to not use a global variable.
+    client = new MongoClient(URI, options);
     clientPromise = client.connect();
 }
 
-export default clientPromise
+// Export a module-scoped MongoClient promise. By doing this in a
+// separate module, the client can be shared across functions.
+export default clientPromise;
 
-let db = client.db("aaronstatic");
+// Helper function to get the database instance
+export async function getDb() {
+    const client = await clientPromise;
+    return client.db("aaronstatic");
+}
 
 const mapRelease = (doc: any): Release => ({
     id: doc.id,
@@ -74,124 +85,78 @@ const mapProject = (doc: any): Project => ({
 });
 
 export const getReleases = async (limit: number): Promise<Release[]> => {
-    let collection = db.collection("releases");
-
-    const documents = await collection
+    const db = await getDb();
+    const releases = await db.collection("releases")
         .find({})
         .sort({ release_date: -1 })
         .limit(limit)
         .toArray();
-
-    const releases: Release[] = documents.map(mapRelease);
-
-    return releases;
-}
+    return releases.map(mapRelease);
+};
 
 export const getAlbums = async (): Promise<Release[]> => {
-    let collection = db.collection("releases");
-
-    const documents = await collection
-        .find({
-            album_group: "album"
-        })
+    const db = await getDb();
+    const albums = await db.collection("releases")
+        .find({ album_type: "album" })
         .sort({ release_date: -1 })
         .toArray();
-
-    const releases: Release[] = documents.map(mapRelease);
-
-    return releases;
-}
+    return albums.map(mapRelease);
+};
 
 export const getSingles = async (): Promise<Release[]> => {
-    let collection = db.collection("releases");
-
-    const documents = await collection
-        .find({
-            album_group: "single"
-        })
+    const db = await getDb();
+    const singles = await db.collection("releases")
+        .find({ album_type: "single" })
         .sort({ release_date: -1 })
         .toArray();
-
-    const releases: Release[] = documents.map(mapRelease);
-
-    return releases;
-}
+    return singles.map(mapRelease);
+};
 
 export const getAppearsOn = async (): Promise<Release[]> => {
-    let collection = db.collection("releases");
-
-    const documents = await collection
-        .find({
-            album_group: "appears_on"
-        })
+    const db = await getDb();
+    const appearsOn = await db.collection("releases")
+        .find({ album_group: "appears_on" })
         .sort({ release_date: -1 })
         .toArray();
-
-    const releases: Release[] = documents.map(mapRelease);
-
-    return releases;
-}
+    return appearsOn.map(mapRelease);
+};
 
 export const getReleaseByName = async (name: string): Promise<Release | null> => {
-    name = name.replace(/-/g, " ");
-    name = name.replace(/%26/g, "&");
-    name = name.replace(/%2C/g, ",");
-
-    let collection = db.collection("releases");
-
-    const document = await collection
-        .findOne({
-            name: name
-        })
-
-    if (!document) return null;
-
-    return mapRelease(document);
-}
+    const db = await getDb();
+    const release = await db.collection("releases")
+        .findOne({ name: name });
+    return release ? mapRelease(release) : null;
+};
 
 export const getMixes = async (limit: number): Promise<Mix[]> => {
-    let collection = db.collection("mixes");
-
-    const documents = await collection
+    const db = await getDb();
+    const mixes = await db.collection("mixes")
         .find({})
-        .sort({ created_time: -1 })
+        .sort({ release_date: -1 })
         .limit(limit)
         .toArray();
-
-    const mixes: Mix[] = documents.map(mapMix);
-
-    return mixes;
-}
+    return mixes.map(mapMix);
+};
 
 export const getProjects = async (limit: number): Promise<Project[]> => {
-    let collection = db.collection("projects");
-
-    const documents = await collection
+    const db = await getDb();
+    const projects = await db.collection("projects")
         .find({})
+        .sort({ release_date: -1 })
         .limit(limit)
         .toArray();
-
-    const projects: Project[] = documents.map(mapProject);
-
-    return projects;
-}
+    return projects.map(mapProject);
+};
 
 export const getContent = async (key: string): Promise<Content> => {
-
-    let collection = db.collection("content");
-
-    const document = await collection
-        .findOne({
-            key: key
-        })
-
-    if (!document) return {
-        paragraphs: [],
-        photos: []
-    };
-
+    const db = await getDb();
+    const content = await db.collection("content")
+        .findOne({ key: key });
+    if (!content) {
+        return { paragraphs: [], photos: [] };
+    }
     return {
-        paragraphs: document.paragraphs,
-        photos: document.photos
+        paragraphs: content.paragraphs || [],
+        photos: content.photos || []
     };
-}
+};
