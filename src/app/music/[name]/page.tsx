@@ -21,8 +21,10 @@ function msToMinutesSeconds(ms: number): string {
     return `${formattedMinutes}:${formattedSeconds}`;
 }
 
+type tParams = Promise<{ name: string }>;
+
 // Generate metadata for better SEO
-export async function generateMetadata({ params }: { params: { name: string } }) {
+export async function generateMetadata({ params }: { params: tParams }) {
     const slug = (await params).name;
     let possibleNames = [
         slug,
