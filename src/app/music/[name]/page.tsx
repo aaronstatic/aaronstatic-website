@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: { params: tParams }) {
     };
 }
 
-export default async function Release({ params }: { params: { name: string } }) {
+export default async function Release({ params }: { params: tParams }) {
     const slug = (await params).name;
     let possibleNames = [
         slug,
