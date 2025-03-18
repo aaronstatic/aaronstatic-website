@@ -16,7 +16,7 @@ const db = client.db("aaronstatic");
 
 async function update() {
     const releases = db.collection("releases");
-    /*
+    
     const result = await spotifyApi.clientCredentialsGrant()
     spotifyApi.setAccessToken(result.body['access_token']);
     const data = await spotifyApi.getArtistAlbums('0Nsz79ZcE8E4i3XZhCzZ1l')
@@ -38,7 +38,7 @@ async function update() {
             console.error(err);
         });
     }
-    */
+    
     const mixJson = await fetch("https://api.mixcloud.com/aaronstatic/cloudcasts/");
     const mixData = await mixJson.json();
 
