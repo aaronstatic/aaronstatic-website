@@ -1,0 +1,43 @@
+[
+  {
+    "_id": "643fc961b8fece631c0bfe76",
+    "name": "VCV Rack Modules",
+    "paragraphs": [
+      "Aaron Static's VCV Rack modules are used by over 20,000 people and are designed to seamlessly integrate music theory concepts into your VCV Rack patches. These modules aim to provide a sophisticated and creative approach to producing music, enriching your modular synthesis experience and saving time.",
+      "ChordCV, ScaleCV, and DiatonicCV work together to create a powerful set of tools for generating chords, scales, and diatonic chord progressions. These modules provide control over various aspects of music theory, such as root note, chord type, inversion, and voicing. The RandomNoteCV module adds an element of controlled randomness by selecting notes from a given range or input scale.",
+      "Take your VCV Rack patches to new heights with these music theory-inspired modules, and unleash your creativity with a deeper understanding of harmonic structures and progressions."
+    ],
+    "photo": "aaronstatic_vcvrack_modules.jpg",
+    "external_urls": {
+      "github": "https://github.com/aaronstatic/AaronStatic_modules",
+      "vcvrack": "https://library.vcvrack.com/AaronStatic"
+    }
+  },
+  {
+    "_id": "643fd223b8fece631c0bfe77",
+    "name": "This Website",
+    "paragraphs": [
+      "This website you are currently browsing is a project in itself, demonstrating Aaron Static's unique combination of musical talent and coding expertise. Designed and developed by Aaron Static himself, the website highlights his abilities in both domains.",
+      "Built using Next.JS 13, React, and TypeScript, the site exemplifies seamless integration of cutting-edge web development technologies. It was also deployed with Docker, ensuring the efficient management of application deployment and scaling. To provide the most up-to-date release and mix information, the website fetches data from the Spotify and Mixcloud APIs, however all pages are server-side rendered using the Next.JS experimental appDir feature. Furthermore, the engaging descriptions you see were created using OpenAI's ChatGPT 4, showcasing an innovative blend of artificial intelligence and human creativity.",
+      "For those interested in exploring the code behind the website, Aaron Static has made the project publicly available on GitHub."
+    ],
+    "photo": "aaronstatic_website.jpg",
+    "external_urls": {
+      "github": "https://github.com/aaronstatic/aaronstatic-website"
+    }
+  },
+  {
+    "_id": "643fe0d9b8fece631c0bfe81",
+    "name": "Overthrow",
+    "photo": "overthrow.jpg",
+    "paragraphs": [
+      "Overthrow is an immersive and engaging modification for the military simulation game Arma 3, developed by Bohemia Interactive. In Overthrow, players band together to overthrow a corrupt government and establish a new one by participating in guerrilla warfare, building bases, recruiting AI companions, and capturing towns and territory. The mod offers both single-player and multiplayer experiences, while introducing a dynamic economy and mission system that constantly evolves the gameplay.",
+      "Aaron masterminded and helped to create this game mode with a team of collaborators who have changed over the years and culminated in the current 'Community Edition' fork of the code actively maintained by Thomas Angel aka Rekter.",
+      "The mod has been installed by almost 50,000 players and has featured on the popular YouTube channels of 'The Spiffing Brit' and 'Rimmy Downunder' which have been viewed by millions."
+    ],
+    "external_urls": {
+      "github": "https://github.com/ArmaOverthrow/Overthrow",
+      "steam": "https://steamcommunity.com/sharedfiles/filedetails/?id=774201744"
+    }
+  }
+]
