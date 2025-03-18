@@ -23,9 +23,7 @@ function msToMinutesSeconds(ms: number): string {
 
 // Generate metadata for better SEO
 export async function generateMetadata({ params }: { params: { name: string } }) {
-    const resolvedParams = await params;
-    // Convert the URL slug to potential release name
-    const slug = resolvedParams.name;
+    const slug = (await params).name;
     let possibleNames = [
         slug,
         slug.replace(/-/g, ' '),
@@ -76,9 +74,7 @@ export async function generateMetadata({ params }: { params: { name: string } })
 }
 
 export default async function Release({ params }: { params: { name: string } }) {
-    const resolvedParams = await params;
-    // Convert the URL slug to potential release name
-    const slug = resolvedParams.name;
+    const slug = (await params).name;
     let possibleNames = [
         slug,
         slug.replace(/-/g, ' '),

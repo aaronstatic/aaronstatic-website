@@ -26,12 +26,6 @@ export const metadata = {
   }
 }
 
-export const viewport = {
-  colorScheme: 'dark',
-  width: 'device-width',
-  initialScale: 1.0
-}
-
 function SocialLinks() {
   return (
     <div className="social-links">
