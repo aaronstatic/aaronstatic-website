@@ -1,5 +1,6 @@
 [data-bs-theme="dark"] {
-  --bs-body-bg: var(--bs-black);
+  --bs-black: #000;
+  --bs-body-bg: var(--bs-black, #000);
   --bs-primary: #B26B88;
   --bs-primary-bg-subtle: #1c1023;
   --bs-primary-rgb: 127, 54, 122;
