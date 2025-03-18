@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   output: 'standalone',
+  allowedDevOrigins: ['dev.aaronstatic.com']
 }
 
 module.exports = nextConfig

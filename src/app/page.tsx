@@ -19,7 +19,7 @@ export default function Home() {
         <h1 className="text-center p-2 display-6">Latest Releases</h1>
         <div className="row gy-2 gx-2 d-flex justify-content-center">
           {releases.map((release) => (
-            <div className="col-lg-2 col-md-3 col-6">
+            <div className="col-lg-2 col-md-3 col-6" key={release.id}>
               <ReleaseCard key={release.id} release={release} />
             </div>
           ))}

@@ -16,7 +16,6 @@ export const metadata = {
   },
   metadataBase: new URL('http://aaronstatic.com'),
   keywords: ['music', 'artist', 'app developer', 'ambient', 'liquid', 'drum & bass', 'organic house', 'house', 'future garage', 'code'],
-  colorScheme: 'dark',
   openGraph: {
     title: "Aaron Static",
     type: "website",
@@ -24,8 +23,13 @@ export const metadata = {
     url: "https://aaronstatic.com",
     siteName: "Aaron Static",
     images: ['https://aaronstatic.com/img/social-preview.jpg']
-  },
-  viewport: 'width=device-width, initial-scale=1.0'
+  }
+}
+
+export const viewport = {
+  colorScheme: 'dark',
+  width: 'device-width',
+  initialScale: 1.0
 }
 
 function SocialLinks() {
@@ -44,15 +48,14 @@ function SocialLinks() {
   )
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const headersList = headers();
+  const headersList = await headers();
   const url = headersList.get('x-url') || "";
   let path = "/" + url.split('/')[3];
-
 
   const nav = getNav();
   return (
@@ -95,7 +98,7 @@ export default function RootLayout({
         <Bootstrap />
         <Analytics />
 
-        <p className="text-center text-secondary"><small>Made with love by Aaron Static using Next.JS 13 and React</small></p>
+        <p className="text-center text-secondary"><small>Made with love by Aaron Static using Next.JS 15 and React</small></p>
       </body>
     </html >
   )

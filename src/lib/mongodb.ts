@@ -97,7 +97,7 @@ export const getReleases = async (limit: number): Promise<Release[]> => {
 export const getAlbums = async (): Promise<Release[]> => {
     const db = await getDb();
     const albums = await db.collection("releases")
-        .find({ album_type: "album" })
+        .find({ album_type: "album", album_group: { $ne: "appears_on" } })
         .sort({ release_date: -1 })
         .toArray();
     return albums.map(mapRelease);

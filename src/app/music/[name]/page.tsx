@@ -1,29 +1,9 @@
-import { Metadata, ResolvingMetadata } from 'next';
-import { getReleaseByName } from '@/lib/mongodb';
-import { use } from 'react';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getReleaseByName } from '@/lib/mongodb';
 import { Review } from '@/lib/types/Release';
 
-type Props = {
-    params: { name: string };
-};
-
-export async function generateMetadata(
-    { params }: Props
-): Promise<Metadata> {
-    const release = await getReleaseByName(params.name);
-
-    if (release === null) {
-        return Promise.resolve({
-            title: undefined,
-        });
-    }
-
-    return {
-        title: `${release.artists.map(artist => (artist.name)).join(", ")} - ${release.name}`,
-    };
-}
-
+// Helper function to convert milliseconds to minutes:seconds format
 function msToMinutesSeconds(ms: number): string {
     const millisecondsInSecond = 1000;
     const secondsInMinute = 60;
@@ -41,34 +21,134 @@ function msToMinutesSeconds(ms: number): string {
     return `${formattedMinutes}:${formattedSeconds}`;
 }
 
-
-export default function Release({ params }: { params: { name: string } }) {
-    const release = use(getReleaseByName(params.name));
-
-    if (release === null) {
-        return (
-            <main className="">
-                <h1>Release not found</h1>
-            </main>
-        )
+// Generate metadata for better SEO
+export async function generateMetadata({ params }: { params: { name: string } }) {
+    const resolvedParams = await params;
+    // Convert the URL slug to potential release name
+    const slug = resolvedParams.name;
+    let possibleNames = [
+        slug,
+        slug.replace(/-/g, ' '),
+        slug.replace(/-/g, ' ').replace(/ and /gi, ' & ')
+    ];
+    
+    // Special case handling
+    if (slug.toLowerCase().includes('remix') && slug.toLowerCase().includes('production')) {
+        possibleNames.push('Remix & Additional Production');
     }
+    
+    // Try to find the release
+    let release = null;
+    for (const name of possibleNames) {
+        const result = await getReleaseByName(name);
+        if (result) {
+            release = result;
+            break;
+        }
+    }
+    
+    if (!release) {
+        return {
+            title: 'Release Not Found - Aaron Static',
+        };
+    }
+    
+    // Extract artist names
+    const artistNames = release.artists && Array.isArray(release.artists)
+        ? release.artists
+            .map((artist: any) => artist && typeof artist.name === 'string' ? artist.name : '')
+            .filter((name: string) => name)
+            .join(", ")
+        : '';
+            
+    const releaseName = release.name && typeof release.name === 'string' ? release.name : '';
+    const pageTitle = artistNames ? `${artistNames} - ${releaseName}` : releaseName;
+    
+    return {
+        title: `${pageTitle} - Aaron Static`,
+        description: release.description?.[0] || 'Music by Aaron Static',
+        openGraph: {
+            title: `${pageTitle} - Aaron Static`,
+            description: release.description?.[0] || 'Music by Aaron Static',
+            images: release.images?.[0]?.url ? [{ url: release.images[0].url }] : [],
+        },
+    };
+}
+
+export default async function Release({ params }: { params: { name: string } }) {
+    const resolvedParams = await params;
+    // Convert the URL slug to potential release name
+    const slug = resolvedParams.name;
+    let possibleNames = [
+        slug,
+        slug.replace(/-/g, ' '),
+        slug.replace(/-/g, ' ').replace(/ and /gi, ' & ')
+    ];
+    
+    // Special case handling
+    if (slug.toLowerCase().includes('remix') && slug.toLowerCase().includes('production')) {
+        possibleNames.push('Remix & Additional Production');
+    }
+    
+    // Try to find the release
+    let release = null;
+    for (const name of possibleNames) {
+        const result = await getReleaseByName(name);
+        if (result) {
+            release = result;
+            break;
+        }
+    }
+    
+    if (!release) {
+        notFound(); // This will show the 404 page
+    }
+    
+    // Extract data safely from release
+    // Prepare data safely to avoid serialization issues
+    const artistNames = release.artists && Array.isArray(release.artists)
+        ? release.artists
+            .map((artist: any) => artist && typeof artist.name === 'string' ? artist.name : '')
+            .filter((name: string) => name)
+            .join(", ")
+        : '';
+        
+    const releaseName = release.name && typeof release.name === 'string' ? release.name : '';
+    const releaseTitle = `${artistNames} - ${releaseName}`;
+    
+    const images = release.images && Array.isArray(release.images) && release.images.length > 0
+        ? release.images
+        : [{ url: '' }];
+        
+    const description = release.description && Array.isArray(release.description)
+        ? release.description
+        : [];
+        
+    const reviews = release.reviews && Array.isArray(release.reviews)
+        ? release.reviews
+        : [];
+        
+    const tracks = release.tracks && Array.isArray(release.tracks)
+        ? release.tracks
+        : [];
+        
+    const externalUrls = release.external_urls || {};
 
     return (
         <main className="">
-            <h1 className="text-center display-6">{`${release.artists.map(artist => (artist.name)).join(", ")} - ${release.name}`}</h1>
+            <h1 className="text-center display-6">{releaseTitle}</h1>
             <div className="row justify-content-center">
                 <div className="col-lg-3 col-md-7 col-12">
                     <div className="card mb-1">
-                        <img src={release.images[0].url} className="card-img-top" alt={release.name} />
+                        <img src={images[0].url} className="card-img-top" alt={releaseName} />
                     </div>
                 </div>
                 <div className="col-lg-9 col-md-6 col-12">
-                    {release.description && release.description.map((paragraph: string, i: number) => (
+                    {description.map((paragraph: string, i: number) => (
                         <p key={i}><small>{paragraph}</small></p>
                     ))}
-                    {release.reviews && (<h6>Reviews</h6>)}
-                    {release.reviews && release.reviews.map((review: Review, i: number) => (
-
+                    {reviews.length > 0 && (<h6>Reviews</h6>)}
+                    {reviews.map((review: Review, i: number) => (
                         <figure key={i}>
                             <blockquote className="blockquote">
                                 <p>{review.text}</p>
@@ -82,39 +162,38 @@ export default function Release({ params }: { params: { name: string } }) {
             </div>
             <div className="row mt-2 justify-content-center">
                 <div className="row justify-content-center mt-2">
-                    {release.external_urls.spotify && (
+                    {externalUrls.spotify && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
-                            <Link href={release.external_urls.spotify} target="_new">
+                            <Link href={externalUrls.spotify} target="_new">
                                 <button type="button" className="btn bg-primary text-primary-emphasis m-1"><i className="fa fa-spotify"></i> Listen on Spotify</button>
                             </Link>
                         </div>
                     )}
 
-
-                    {release.external_urls.apple && (
+                    {externalUrls.apple && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
-                            <Link href={release.external_urls.apple} target="_new">
+                            <Link href={externalUrls.apple} target="_new">
                                 <button type="button" className="btn bg-primary text-primary-emphasis m-1"><i className="fa fa-apple"></i> Listen on Apple</button>
                             </Link>
                         </div>
                     )}
-                    {release.external_urls.tidal && (
+                    {externalUrls.tidal && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
-                            <Link href={release.external_urls.tidal} target="_new">
+                            <Link href={externalUrls.tidal} target="_new">
                                 <button type="button" className="btn bg-primary text-primary-emphasis m-1"><img height="16" width="16" src="/img/icons/tidal.svg" /> Listen on Tidal</button>
                             </Link>
                         </div>
                     )}
-                    {release.external_urls.bandcamp && (
+                    {externalUrls.bandcamp && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
-                            <Link href={release.external_urls.bandcamp} target="_new">
+                            <Link href={externalUrls.bandcamp} target="_new">
                                 <button type="button" className="btn bg-primary text-primary-emphasis m-1"><img height="16" width="16" src="/img/icons/bandcamp.svg" /> Buy on Bandcamp</button>
                             </Link>
                         </div>
                     )}
-                    {release.external_urls.beatport && (
+                    {externalUrls.beatport && (
                         <div className="col-lg-2 col-md-8 col-12 text-center">
-                            <Link href={release.external_urls.beatport} target="_new">
+                            <Link href={externalUrls.beatport} target="_new">
                                 <button type="button" className="btn bg-primary text-primary-emphasis m-1"><img height="16" width="16" src="/img/icons/beatport.svg" /> Buy on Beatport</button>
                             </Link>
                         </div>
@@ -132,29 +211,39 @@ export default function Release({ params }: { params: { name: string } }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {release.tracks.map((track, index) => (
-                                    <tr key={index}>
-                                        <th scope="row">{index + 1}</th>
-                                        <td>{track.artists.map(artist => (artist.name)).join(", ")}</td>
-                                        <td>{track.name}</td>
-                                        <td>{msToMinutesSeconds(track.duration_ms)}</td>
-                                    </tr>
-                                ))}
+                                {tracks.map((track: any, index: number) => {
+                                    const trackArtists = track.artists && Array.isArray(track.artists)
+                                        ? track.artists
+                                            .map((artist: any) => artist && typeof artist.name === 'string' ? artist.name : '')
+                                            .filter((name: string) => name)
+                                            .join(", ")
+                                        : '';
+                                    
+                                    const trackName = track.name && typeof track.name === 'string' ? track.name : '';
+                                    const trackDuration = typeof track.duration_ms === 'number' ? track.duration_ms : 0;
+                                    
+                                    return (
+                                        <tr key={index}>
+                                            <th scope="row">{index + 1}</th>
+                                            <td>{trackArtists}</td>
+                                            <td>{trackName}</td>
+                                            <td>{msToMinutesSeconds(trackDuration)}</td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            {
-                release.lyrics && (
-                    <div className="row justify-content-center">
-                        <div className="col-lg-4 col-md-8 col-12">
-                            <h5>Lyrics</h5>
-                            <p style={{ whiteSpace: "pre-wrap" }}>{release.lyrics}</p>
-                        </div>
+            {release.lyrics && (
+                <div className="row justify-content-center">
+                    <div className="col-lg-4 col-md-8 col-12">
+                        <h5>Lyrics</h5>
+                        <p style={{ whiteSpace: "pre-wrap" }}>{release.lyrics}</p>
                     </div>
-                )
-            }
-        </main >
-    )
+                </div>
+            )}
+        </main>
+    );
 }
